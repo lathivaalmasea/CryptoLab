@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+from algorithms import caesar
 
 ###. LOGO CRYPTOLAB
 def get_logo_path():
@@ -795,6 +796,140 @@ def process_skeleton(title, input_label="Masukkan Teks", key_label="Kunci"):
 
     return mode, text, key
 
+def caesar_page():
+    left, right = st.columns([1.05, 1.35], gap="large")
+
+    # ========================================================
+    # KOLOM KIRI: INPUT DAN HASIL
+    # ========================================================
+
+    with left:
+        with st.container(border=True):
+            st.markdown(
+                '<div class="panel-title">Input</div>',
+                unsafe_allow_html=True
+            )
+
+            mode = st.radio(
+                "Pilih Proses",
+                ["Enkripsi", "Dekripsi"],
+                horizontal=True,
+                key="caesar_mode"
+            )
+
+            text = st.text_input(
+                "Masukkan Teks",
+                key="caesar_text"
+            )
+
+            key = st.text_input(
+                "Kunci (k)",
+                key="caesar_key"
+            )
+
+            proses = st.button(
+                "Proses",
+                type="primary",
+                use_container_width=True,
+                key="caesar_button"
+            )
+
+        with st.container(border=True):
+            st.markdown(
+                '<div class="panel-title">Hasil</div>',
+                unsafe_allow_html=True
+            )
+
+            if proses:
+                if not text:
+                    st.warning("Masukkan teks terlebih dahulu.")
+
+                elif not key.strip():
+                    st.warning("Masukkan kunci terlebih dahulu.")
+
+                else:
+                    try:
+                        kunci = int(key)
+
+                        if mode == "Enkripsi":
+                            hasil = caesar.encrypt(text, kunci)
+                        else:
+                            hasil = caesar.decrypt(text, kunci)
+
+                        st.markdown(
+                            '<div class="result-box">'
+                            '<b>Hasil {}:</b><br>{}'
+                            '</div>'.format(mode, hasil),
+                            unsafe_allow_html=True
+                        )
+
+                    except ValueError:
+                        st.error(
+                            "Kunci harus berupa bilangan bulat."
+                        )
+
+            else:
+                st.markdown(
+                    '<div class="placeholder">'
+                    'Hasil algoritma akan ditampilkan di sini.'
+                    '</div>',
+                    unsafe_allow_html=True
+                )
+
+    # ========================================================
+    # KOLOM KANAN: LANGKAH-LANGKAH PROSES
+    # ========================================================
+
+    with right:
+        with st.container(border=True):
+            st.markdown(
+                '<div class="panel-title">'
+                'Langkah-langkah Proses'
+                '</div>',
+                unsafe_allow_html=True
+            )
+
+            if proses and text and key.strip():
+                try:
+                    kunci = int(key)
+
+                    langkah = caesar.get_steps(
+                        text, kunci, mode
+                    )
+
+                    if langkah:
+                        st.dataframe(
+                            langkah,
+                            use_container_width=True,
+                            hide_index=True
+                        )
+                    else:
+                        st.info("Tidak ada karakter untuk diproses.")
+
+                except ValueError:
+                    st.info(
+                        "Masukkan kunci berupa bilangan bulat "
+                        "untuk melihat langkah proses."
+                    )
+
+            else:
+                st.markdown(
+                    '<div class="placeholder">'
+                    'Tabel perhitungan setiap karakter '
+                    'akan ditampilkan di sini.'
+                    '</div>',
+                    unsafe_allow_html=True
+                )
+
+        st.markdown(
+            '<div class="note">'
+            '<b>Catatan:</b> Caesar Cipher menggeser setiap '
+            'huruf berdasarkan nilai kunci. Spasi, angka, '
+            'dan simbol tidak mengalami perubahan.'
+            '</div>',
+            unsafe_allow_html=True
+        )
+
 def footer():
     st.markdown("""
     <div class="app-footer">
@@ -913,13 +1048,17 @@ if menu == "Beranda":
                 unsafe_allow_html=True
             )
 
+
 elif menu == "1. Caesar Cipher":
     algorithm_header(
         "1. Caesar Cipher (Klasik)",
-        "Kerangka modul Caesar Cipher. Implementasi akan dikerjakan Anggota 1.",
-        "Enkripsi : C = (P + k) mod 26<br>Dekripsi : P = (C - k) mod 26"
+        "Implementasi algoritma Caesar Cipher untuk "
+        "proses enkripsi dan dekripsi.",
+        "Enkripsi : C = (P + k) mod 26<br>"
+        "Dekripsi : P = (C - k) mod 26"
     )
-    process_skeleton("caesar", key_label="Kunci (k)")
+
+    caesar_page()
 
 elif menu == "2. Vigenère Cipher":
     algorithm_header(
