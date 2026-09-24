@@ -1,6 +1,6 @@
 import streamlit as st
 import os
-from algorithms import caesar
+from algorithms import caesar, lfsr
 
 ###. LOGO CRYPTOLAB
 def get_logo_path():
@@ -937,6 +937,150 @@ def footer():
     </div>
     """, unsafe_allow_html=True)
 
+
+# ============================================================
+# LFSR STREAM CIPHER PAGE
+# ============================================================
+
+def lfsr_page():
+    left, right = st.columns([1.05, 1.35], gap="large")
+
+    # ========================================================
+    # KOLOM KIRI: INPUT DAN HASIL
+    # ========================================================
+
+    with left:
+        with st.container(border=True):
+            st.markdown(
+                '<div class="panel-title">Input</div>',
+                unsafe_allow_html=True
+            )
+
+            mode = st.radio(
+                "Pilih Proses",
+                ["Enkripsi", "Dekripsi"],
+                horizontal=True,
+                key="lfsr_mode"
+            )
+
+            if mode == "Enkripsi":
+                input_label = "Masukkan Teks"
+                placeholder = "Masukkan teks yang akan dienkripsi..."
+            else:
+                input_label = "Ciphertext (Hexadecimal)"
+                placeholder = "Masukkan ciphertext hexadecimal..."
+
+            text = st.text_area(
+                input_label,
+                placeholder=placeholder,
+                key="lfsr_text"
+            )
+
+            seed = st.text_input(
+                "Seed Awal (8 bit biner)",
+                placeholder="Contoh: 10110010",
+                key="lfsr_seed"
+            )
+
+            proses = st.button(
+                "Proses",
+                type="primary",
+                use_container_width=True,
+                key="lfsr_button"
+            )
+
+        # ====================================================
+        # HASIL
+        # ====================================================
+
+        with st.container(border=True):
+            st.markdown(
+                '<div class="panel-title">Hasil</div>',
+                unsafe_allow_html=True
+            )
+
+            if proses:
+                if not text.strip():
+                    st.warning("Masukkan teks terlebih dahulu.")
+
+                elif not seed.strip():
+                    st.warning("Masukkan seed awal terlebih dahulu.")
+
+                else:
+                    try:
+                        if mode == "Enkripsi":
+                            hasil = lfsr.encrypt(text, seed)
+                        else:
+                            hasil = lfsr.decrypt(text, seed)
+
+                        st.markdown(
+                            f'<div class="result-box">'
+                            f'<b>Hasil {mode}:</b>'
+                            f'</div>',
+                            unsafe_allow_html=True
+                        )
+
+                        st.code(hasil, language=None)
+
+                    except ValueError as e:
+                        st.error(str(e))
+
+            else:
+                st.markdown(
+                    '<div class="placeholder">'
+                    'Hasil enkripsi atau dekripsi akan ditampilkan di sini.'
+                    '</div>',
+                    unsafe_allow_html=True
+                )
+
+    # ========================================================
+    # KOLOM KANAN: LANGKAH PROSES
+    # ========================================================
+
+    with right:
+        with st.container(border=True):
+            st.markdown(
+                '<div class="panel-title">'
+                'Langkah-langkah Proses'
+                '</div>',
+                unsafe_allow_html=True
+            )
+
+            if proses and text.strip() and seed.strip():
+                try:
+                    langkah = lfsr.get_steps(text, seed, mode)
+
+                    if langkah:
+                        st.dataframe(
+                            langkah,
+                            use_container_width=True,
+                            hide_index=True
+                        )
+                    else:
+                        st.info("Tidak ada data untuk diproses.")
+
+                except ValueError as e:
+                    st.info(str(e))
+
+            else:
+                st.markdown(
+                    '<div class="placeholder">'
+                    'Tabel perhitungan byte dan keystream '
+                    'akan ditampilkan di sini.'
+                    '</div>',
+                    unsafe_allow_html=True
+                )
+
+        st.markdown(
+            '<div class="note">'
+            '<b>Catatan:</b> LFSR menghasilkan keystream dari '
+            'register biner. Keystream kemudian digunakan untuk '
+            'melakukan operasi XOR terhadap data input. '
+            'Dekripsi menggunakan seed yang sama.'
+            '</div>',
+            unsafe_allow_html=True
+        )
+
 # ============================================================
 # FOOTER FUNCTION
 # ============================================================
@@ -1079,10 +1223,15 @@ elif menu == "3. XOR Cipher":
 elif menu == "4. LFSR Stream Cipher":
     algorithm_header(
         "4. LFSR Stream Cipher (Modern)",
-        "Kerangka modul LFSR Stream Cipher. Implementasi akan dikerjakan Anggota 3.",
-        "Keystream dibangkitkan oleh LFSR kemudian digunakan pada operasi XOR."
+        "Implementasi algoritma LFSR Stream Cipher untuk "
+        "proses enkripsi dan dekripsi.",
+        "Keystream dibangkitkan oleh LFSR kemudian digunakan "
+        "pada operasi XOR.<br>"
+        "C = P XOR K<br>"
+        "P = C XOR K"
     )
-    process_skeleton("lfsr", key_label="Seed Awal (biner)")
+
+    lfsr_page()
 
 elif menu == "5. Super Encryption":
     algorithm_header(
