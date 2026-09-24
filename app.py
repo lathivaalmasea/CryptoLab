@@ -1,365 +1,703 @@
 import streamlit as st
+import os
 
-st.set_page_config(
-    page_title="CryptoLab",
-    page_icon="🔐",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
+###. LOGO CRYPTOLAB
+def get_logo_path():
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base_dir, "assets", "cryptolab_logo.png")
 
-# ============================================================
-# CRYPTOLAB - UI SKELETON
-# ============================================================
-# This file contains the shared UI only.
-# Algorithm implementation will be added by each member.
-# ============================================================
+###. SIDEBAR CRYPTOLAB
 
-st.markdown("""
-<style>
-    /* ---------- Global ---------- */
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
-
-    html,
-    body,
-    .stApp,
-    [class*="css"] {
-        font-family: 'Poppins', sans-serif;
-    }
-    
-    .stApp,
-    .stApp *,
-    .stApp input,
-    .stApp textarea,
-    .stApp button,
-    .stApp label,
-    .stApp p,
-    .stApp span,
-    .stApp div {
-        font-family: 'Poppins', sans-serif !important;
-    }
-                
-    .stApp {
-        background: #f3f8ff;
-    }
-
-    [data-testid="stHeader"] {
-        background: rgba(255,255,255,0.0);
-    }
-
-    .block-container {
-        max-width: 1450px;
-        padding-top: 1.5rem;
-        padding-bottom: 3rem;
-    }
-            
-    div[data-testid="stVerticalBlock"] {
-        gap: 0.5rem;
-    }
-            
-    /* =========================================================
-    FORM SPACING
-    ========================================================= */
-
-    div[data-testid="stTextInput"] {
-        margin-bottom: 6px;
-    }
-
-    div[data-testid="stRadio"] {
-        margin-bottom: 4px;
-    }
-
-    div.stButton {
-        margin-top: 6px;
-    }
-
-
-    /* ---------- Sidebar ---------- */
-    section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #0e2d55 0%, #173f73 100%);
-    }
-
-    section[data-testid="stSidebar"] * {
-        font-family: 'Poppins', sans-serif;
-    }
-
-    section[data-testid="stSidebar"] .stMarkdown,
-    section[data-testid="stSidebar"] .stCaption {
-        color: white;
-    }
-            
-    .side-brand {
-        padding: 10px 6px 18px 6px;
-    }
-
-    .side-brand-title {
-        font-size: 22px;
-        font-weight: 800;
-        line-height: 1.2;
-        margin: 0;
-    }
-
-    .side-brand-subtitle {
-        font-size: 9px;
-        font-weight: 500;
-        letter-spacing: 1.2px;
-        opacity: .7;
-        margin-top: 4px;
-    }
-
-    .side-line {
-        height: 1px;
-        background: rgba(255,255,255,.18);
-        margin: 16px 0;
-    }
-
-    /* ---------- Hero ---------- */
-    .hero {
-        background: linear-gradient(135deg, #ffffff 0%, #edf6ff 100%);
-        border: 1px solid #d9e8f7;
-        border-radius: 20px;
-        padding: 30px 32px;
-        box-shadow: 0 8px 28px rgba(28, 77, 125, .07);
-        margin-bottom: 24px;
-    }
-
-    .hero-kicker {
-        color: #2878d4;
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        margin-bottom: 6px;
-    }
-
-    .hero-title {
-        color: #12366a;
-        font-size: 38px;
-        line-height: 1.15;
-        font-weight: 800;
-        margin: 0 0 10px 0;
-    }
-
-    .hero-title span {
-        color: #1677e8;
-    }
-
-    .hero-text {
-        color: #5a6b80;
-        font-size: 14px;
-        line-height: 1.6;
-        max-width: 720px;
-        margin: 0;
-    }
-
-    .quote-box {
-        margin-top: 16px;
-        padding: 10px 14px;
-        background: #fff1f5;
-        border-left: 4px solid #ef5272;
-        border-radius: 10px;
-        color: #8b4050;
-        font-size: 12px;
-        height: 1.5;
-    }
-
-    /* ---------- Cards ---------- */
-    .algo-card {
-        min-height: 142px;
-        border-radius: 17px;
-        padding: 18px;
-        border: 1px solid #dfeaf5;
-        box-shadow: 0 6px 18px rgba(25, 69, 110, .06);
-        background: white;
-    }
-
-    .algo-number {
-        font-size: 12px;
-        font-weight: 800;
-        color: #60748b;
-    }
-
-    .algo-name {
-        font-size: 17px;
-        font-weight: 800;
-        color: #173b6c;
-        margin-top: 12px;
-    }
-
-    .algo-type {
-        font-size: 11px;
-        color: #708198;
-        margin-top: 4px;
-    }
-
-    .card-caesar { background: linear-gradient(145deg,#fff0f3,#fffafa); }
-    .card-vigenere { background: linear-gradient(145deg,#fff8e7,#fffdf6); }
-    .card-xor { background: linear-gradient(145deg,#eafaf5,#f8fffc); }
-    .card-lfsr { background: linear-gradient(145deg,#f1edff,#fcfaff); }
-    .card-super { background: linear-gradient(145deg,#edf4ff,#fafdff); }
-
-    /* ---------- Section ---------- */
-    .section-title {
-        color: #163a6b;
-        font-size: 20px;
-        font-weight: 800;
-        margin: 8px 0 10px;
-    }
-
-    .info-card {
-        background: white;
-        border: 1px solid #dfeaf5;
-        border-radius: 16px;
-        padding: 18px;
-        min-height: 105px;
-        box-shadow: 0 5px 18px rgba(25, 69, 110, .05);
-    }
-
-    .info-title {
-        color: #214b80;
-        font-weight: 800;
-        font-size: 14px;
-    }
-
-    .info-text {
-        color: #6b7d92;
-        font-size: 12px;
-        margin-top: 6px;
-        line-height: 1.45;
-    }
-
-    /* ---------- Algorithm page ---------- */
-    .page-header {
-        background: white;
-        border: 1px solid #dfeaf5;
-        border-radius: 18px;
-        padding: 18px 22px;
-        box-shadow: 0 5px 18px rgba(25,69,110,.05);
-        margin-bottom: 16px;
-    }
-
-    .page-title {
-        color: #153a6d;
-        font-size: 27px;
-        font-weight: 850;
-        margin: 0;
-    }
-
-    .page-subtitle {
-        color: #718197;
-        font-size: 12px;
-        margin-top: 4px;
-    }
-
-    .formula {
-        background: #fff1f5;
-        border: 1px solid #f3d6df;
-        border-radius: 12px;
-        padding: 12px 15px;
-        color: #8b3e4d;
-        font-family: 'Poppins', sans-serif !important;
-        font-size: 12px;
-        line-height: 1.6;
-        margin-bottom: 16px;
-    }
-
-    /* =========================================================
-    STREAMLIT CONTAINERS
-    ========================================================= */
-
-    div[data-testid="stVerticalBlockBorderWrapper"] {
-        background: #ffffff;
-        border: 1px solid #dfe6ef;
-        border-radius: 16px;
-        padding: 4px;
-        box-shadow: 0 5px 18px rgba(25, 69, 110, 0.05);
-        margin-bottom: 16px;
-    }
-
-    div[data-testid="stVerticalBlockBorderWrapper"]
-    > div {
-        border: none !important;
-    }
-
-    .panel-title {
-        color: #184477;
-        font-size: 16px;
-        font-weight: 800;
-        margin-bottom: 12px;
-    }
-
-    .result-box {
-        background: #edf9f3;
-        border: 1px solid #cdeedf;
-        border-radius: 14px;
-        padding: 16px;
-        color: #236a4a;
-        font-family: 'Poppins', sans-serif !important;
-        min-height: 65px;
-    }
-
-    .placeholder {
-        background: #f8fbff;
-        border: 1px dashed #aac4df;
-        border-radius: 12px;
-        padding: 18px;
-        color: #708198;
-        text-align: center;
-        font-size: 13px;
-    }
-
-    .note {
-        background: #fff9df;
-        border: 1px solid #f4e4a5;
-        border-radius: 12px;
-        padding: 12px 14px;
-        color: #77621c;
-        font-size: 12px;
-    }
-
-    /* Streamlit controls */
-    div.stButton > button {
-        border-radius: 10px;
-        font-weight: 750;
-    }
-
-    div[data-testid="stDataFrame"] {
-        border-radius: 12px;
-        overflow: hidden;
-    }
-</style>
-""", unsafe_allow_html=True)
-
+def pilih_menu(menu):
+    st.session_state["nav_menu"] = menu
 
 def sidebar():
     with st.sidebar:
-        st.markdown("""
-        <div class="side-brand">
-            <div class="side-brand-title">🔐 CryptoLab</div>
-            <div class="side-brand-subtitle">KRIPTOGRAFI EXPLORER</div>
-        </div>
-        """, unsafe_allow_html=True)
+
+        # LOGO
+        logo_path = get_logo_path()
+
+        if os.path.exists(logo_path):
+            st.image(logo_path, width=52)
+        else:
+            st.warning(
+                "Logo tidak ditemukan. "
+                "Pastikan file ada di assets/cryptolab_logo.png"
+            )
+
+        # BRAND
+        st.markdown(
+            """
+            <div class="side-brand-title">CryptoLab</div>
+            <div class="side-brand-subtitle">
+                KRIPTOGRAFI EXPLORER
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
         st.markdown("### Menu")
 
-        menu = st.radio(
-            "Navigasi",
-            [
-                "Beranda",
-                "1. Caesar Cipher",
-                "2. Vigenère Cipher",
-                "3. XOR Cipher",
-                "4. LFSR Stream Cipher",
-                "5. Super Encryption",
-                "Tentang Aplikasi",
-                "Kelompok",
-            ],
-            label_visibility="collapsed",
+        # DAFTAR MENU
+        menu_list = [
+            "Beranda",
+            "1. Caesar Cipher",
+            "2. Vigenère Cipher",
+            "3. XOR Cipher",
+            "4. LFSR Stream Cipher",
+            "5. Super Encryption",
+            "Tentang Aplikasi",
+            "Kelompok",
+        ]
+
+        # MENU DEFAULT
+        if "nav_menu" not in st.session_state:
+            st.session_state["nav_menu"] = "Beranda"
+
+        # TOMBOL MENU
+        for menu_item in menu_list:
+
+            is_active = (
+                st.session_state["nav_menu"] == menu_item
+            )
+
+            st.button(
+                menu_item,
+                key=f"nav_{menu_item}",
+                type="primary" if is_active else "secondary",
+                use_container_width=True,
+                on_click=pilih_menu,
+                args=(menu_item,)
+            )
+
+        st.markdown(
+            '<div class="side-line"></div>',
+            unsafe_allow_html=True
         )
 
-        st.markdown('<div class="side-line"></div>', unsafe_allow_html=True)
-        st.caption("CryptoLab — Proyek Mata Kuliah Kriptografi")
+    return st.session_state["nav_menu"]
 
-    return menu
+###. UI SKELETON - CRYPTOLAB
+st.markdown("""
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+/* COLOR PALETTE */
+
+:root {
+    --main-bg: #F2E3D3;
+    --colombia-blue: #D2E8FF;
+    --green: #26422A;
+    --brown: #5D372A;
+    --brown-hover: #704634;
+    --white: #FFFFFF;
+    --border: rgba(93, 55, 42, 0.18);
+    --shadow: rgba(93, 55, 42, 0.08);
+}
+
+/* GLOBAL */
+
+html,
+body,
+.stApp,
+.stApp *,
+.stApp input,
+.stApp textarea,
+.stApp button,
+.stApp label,
+.stApp p,
+.stApp span,
+.stApp div {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+/* =========================================================
+   FIX IKON PANAH SIDEBAR STREAMLIT
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0');
+
+/* Ikon pada tombol buka/tutup sidebar */
+[data-testid="stSidebarCollapseButton"] [data-testid="stIconMaterial"],
+[data-testid="stSidebarCollapsedControl"] [data-testid="stIconMaterial"],
+[data-testid="stSidebarNavCollapseIcon"],
+[data-testid="stIconMaterial"] {
+    font-family: "Material Symbols Rounded" !important;
+    font-weight: 400 !important;
+    font-style: normal !important;
+    font-size: 24px !important;
+    line-height: 1 !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+    white-space: nowrap !important;
+    direction: ltr !important;
+    font-feature-settings: "liga" !important;
+    -webkit-font-feature-settings: "liga" !important;
+}
+
+/* Background Utama */
+.stApp {
+    background: var(--main-bg);
+    color: var(--green);
+}
+
+/* Header Streamlit */
+[data-testid="stHeader"] {
+    background: transparent;
+}
+
+/* Area utama */
+.block-container {
+    max-width: 1450px;
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+}
+
+/* Jarak antar komponen */
+div[data-testid="stVerticalBlock"] {
+    gap: 1rem;
+}
+
+
+/* SIDEBAR */
+section[data-testid="stSidebar"] {
+    background: var(--colombia-blue);
+}
+
+/* Semua teks sidebar */
+section[data-testid="stSidebar"] * {
+    font-family: 'Poppins', sans-serif !important;
+    color: var(--green);
+}
+
+/* Brand */
+.side-brand {
+    padding: 8px 4px 18px 4px;
+    text-align: left;
+}
+
+/* Logo */
+.side-logo {
+    width: 52px;
+    height: 52px;
+    object-fit: contain;
+    margin-bottom: 8px;
+}
+
+/* Nama aplikasi */
+.side-brand-title {
+    color: var(--green);
+    font-size: 23px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 0;
+}
+
+/* Subtitle */
+.side-brand-subtitle {
+    color: var(--green);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    opacity: .75;
+    margin-top: 4px;
+}
+
+/* Judul Menu */
+section[data-testid="stSidebar"] h3 {
+    color: var(--green) !important;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   SIDEBAR MENU - TAMPILAN PUSH BUTTON
+   ========================================================= */
+
+/* Jarak antar tombol menu */
+section[data-testid="stSidebar"] div[role="radiogroup"] {
+    gap: 10px !important;
+}
+
+/* Tampilan tombol menu yang tidak aktif */
+section[data-testid="stSidebar"] div[role="radiogroup"] label {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-height: 44px !important;
+    padding: 10px 14px !important;
+    box-sizing: border-box !important;
+
+    background: #F5FAFF !important;
+    border: 1px solid rgba(38, 66, 42, 0.15) !important;
+    border-radius: 10px !important;
+
+    color: var(--green) !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+}
+
+/* Hilangkan lingkaran radio agar terlihat seperti tombol */
+section[data-testid="stSidebar"] div[role="radiogroup"] label [data-baseweb="radio"] {
+    display: none !important;
+}
+
+/* Tombol saat diarahkan kursor */
+section[data-testid="stSidebar"] div[role="radiogroup"] label:hover {
+    background: #E8F2E8 !important;
+    border-color: var(--green) !important;
+}
+
+/* Tombol menu yang sedang aktif */
+section[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {
+    background: #E5F0E3 !important;
+    border: 1.5px solid var(--green) !important;
+    color: var(--green) !important;
+    font-weight: 700 !important;
+    box-shadow: inset 4px 0 0 var(--green) !important;
+}
+
+/* Pastikan teks menu tetap terlihat */
+section[data-testid="stSidebar"] div[role="radiogroup"] label p {
+    color: var(--green) !important;
+    margin: 0 !important;
+    font-size: 14px !important;
+}
+
+/* Garis sidebar */
+.side-line {
+    height: 1px;
+    background: rgba(93,55,42,.25);
+    margin: 18px 0;
+}
+
+/* Caption */
+section[data-testid="stSidebar"] .stCaption {
+    color: var(--green) !important;
+    opacity: .75;
+}
+
+
+/* HERO */
+.hero {
+    background: var(--white);
+    border: 1px solid var(--green-soft);
+    border-radius: 24px;
+    padding: 32px 34px;
+    box-shadow: 0 8px 25px rgba(93,55,42,.08);
+    margin-bottom: 28px;
+}
+
+.hero-kicker {
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 7px;
+}
+
+.hero-title {
+    color: var(--green);
+    font-size: 38px;
+    line-height: 1.15;
+    font-weight: 800;
+    margin: 0 0 10px 0;
+}
+
+.hero-title span {
+    color: var(--green);
+}
+
+.hero-text {
+    color: var(--green);
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 720px;
+    margin: 0;
+}
+
+.quote-box {
+    margin-top: 18px;
+    padding: 11px 15px;
+    background: var(--main-bg);
+    border-left: 4px solid var(--green);
+    border-radius: 10px;
+    color: var(--green);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* SECTION TITLE */
+.section-title {
+    color: var(--green);
+    font-size: 21px;
+    font-weight: 800;
+    margin: 8px 0 12px;
+}
+
+
+/* ALGORITHM CARDS */
+.algo-card {
+    min-height: 145px;
+    border-radius: 18px;
+    padding: 18px;
+    border: 1px solid var(--green-soft);
+    box-shadow: 0 6px 18px rgba(93,55,42,.06);
+    background: var(--white);
+}
+
+.algo-number {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--green);
+}
+
+.algo-name {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--green);
+    margin-top: 12px;
+}
+
+
+.algo-type {
+    font-size: 11px;
+    color: var(--green);
+    opacity: .7;
+    margin-top: 5px;
+}
+
+
+.card-caesar,
+.card-vigenere,
+.card-xor,
+.card-lfsr,
+.card-super {
+    background: var(--white);
+}
+
+
+/* INFO CARDS */
+.info-card {
+    background: var(--white);
+    border: 1px solid var(--green-soft);
+    border-radius: 17px;
+    padding: 18px;
+    min-height: 105px;
+    box-shadow: 0 5px 18px rgba(93,55,42,.05);
+}
+
+.info-title {
+    color: var(--green);
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.info-text {
+    color: var(--green);
+    opacity: .75;
+    font-size: 12px;
+    margin-top: 6px;
+    line-height: 1.45;
+}
+
+
+/* ALGORITHM PAGE */
+.page-header {
+    background: var(--white);
+    border: 1px solid var(--green-soft);
+    border-radius: 18px;
+    padding: 19px 22px;
+    box-shadow: 0 5px 18px rgba(93,55,42,.05);
+    margin-bottom: 16px;
+}
+
+.page-title {
+    color: var(--green);
+    font-size: 27px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.page-subtitle {
+    color: var(--green);
+    opacity: .7;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+
+/* FORMULA */
+.formula {
+    background: var(--white);
+    border: 1px solid var(--green-soft);
+    border-left: 4px solid var(--green);
+    border-radius: 12px;
+    padding: 12px 15px;
+    color: var(--green);
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 12px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+
+/* STREAMLIT CONTAINER */
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    background: var(--white);
+    border: 1px solid var(--green-soft);
+    border-radius: 16px;
+    padding: 5px;
+    box-shadow: 0 5px 18px rgba(93,55,42,.05);
+    margin-bottom: 16px;
+}
+
+div[data-testid="stVerticalBlockBorderWrapper"] > div {
+    border: none !important;
+}
+
+/* Judul panel */
+.panel-title {
+    color: var(--green);
+    font-size: 16px;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+
+/* INPUT */
+
+div[data-testid="stTextInput"] input {
+    background: #fffdf6 !important;
+    color: var(--green) !important;
+    border: 1px solid rgba(38,66,42,.20) !important;
+    border-radius: 10px !important;
+}
+
+
+div[data-testid="stTextInput"] input:focus {
+    border-color: var(--green) !important;
+    box-shadow: 0 0 0 1px var(--green) !important;
+}
+
+
+/* LABEL INPUT */
+
+div[data-testid="stTextInput"] label {
+    color: var(--green) !important;
+}
+
+
+/* RADIO */
+
+div[data-testid="stRadio"] label {
+    color: var(--green) !important;
+}
+
+
+/* BUTTON */
+
+div.stButton {
+    margin-top: 6px;
+}
+
+
+div.stButton > button {
+    background: var(--green) !important;
+    color: var(--white) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-weight: 700 !important;
+    min-height: 42px;
+}
+
+
+div.stButton > button:hover {
+    background: #1d3521 !important;
+    color: var(--white) !important;
+}
+
+
+/* PLACEHOLDER */
+
+.placeholder {
+    background: #fffdf6;
+    border: 1px dashed rgba(38,66,42,.30);
+    border-radius: 12px;
+    padding: 18px;
+    color: var(--green);
+    opacity: .75;
+    text-align: center;
+    font-size: 13px;
+}
+
+
+/* NOTE */
+
+.note {
+    background: var(--colombia-blue);
+    border: 1px solid rgba(38,66,42,.15);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: var(--green);
+    font-size: 12px;
+}
+
+
+/* RESULT */
+
+.result-box {
+    background: #eef7ee;
+    border: 1px solid rgba(38,66,42,.20);
+    border-radius: 14px;
+    padding: 16px;
+    color: var(--green);
+    font-family: 'Poppins', sans-serif !important;
+    min-height: 65px;
+}
+
+
+/* DATAFRAME */
+div[data-testid="stDataFrame"] {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+
+/* FOOTER */
+
+/* Area utama memenuhi tinggi layar */
+.main .block-container {
+    min-height: calc(100vh - 5rem);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Kontainer utama Streamlit */
+.main .block-container > div[data-testid="stVerticalBlock"] {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Dorong elemen footer ke bagian bawah */
+div[data-testid="stElementContainer"]:has(.app-footer) {
+    margin-top: auto !important;
+    width: 100%;
+}
+
+/* Tampilan footer */
+.app-footer {
+    background: var(--brown);
+    color: var(--white);
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 30px;
+    padding: 24px 20px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 0;
+}
+
+
+/* REMOVE DEFAULT STREAMLIT INFO COLORS */
+div[data-testid="stAlert"] {
+    border-radius: 14px;
+}
+
+
+/* FORM SPACING */
+
+div[data-testid="stTextInput"] {
+    margin-bottom: 6px;
+}
+
+
+div[data-testid="stRadio"] {
+    margin-bottom: 4px;
+}
+
+/* SPACING BERANDA */
+
+/* Jarak setelah judul Algoritma */
+.section-title {
+    color: var(--green);
+    font-size: 21px;
+    font-weight: 800;
+    margin: 8px 0 18px;
+}
+
+/* Jarak antar kartu algoritma */
+.algo-card {
+    min-height: 145px;
+    border-radius: 18px;
+    padding: 18px;
+    border: 1px solid var(--green-soft);
+    box-shadow: 0 6px 18px rgba(38, 66, 42, 0.06);
+    background: var(--white);
+    box-sizing: border-box;
+}
+
+/* Jarak antara kartu algoritma dan kartu informasi */
+.home-section-spacer {
+    height: 30px;
+}
+
+/* Kartu informasi */
+.info-card {
+    background: var(--white);
+    border: 1px solid var(--green-soft);
+    border-radius: 17px;
+    padding: 20px;
+    min-height: 110px;
+    box-shadow: 0 5px 18px rgba(38, 66, 42, 0.05);
+    box-sizing: border-box;
+}
+
+/* SIDEBAR MENU BUTTON */
+
+/* Tombol menu tidak aktif */
+section[data-testid="stSidebar"] div.stButton > button {
+    background: rgba(255, 255, 255, 0.75) !important;
+    color: var(--green) !important;
+    border: 1px solid rgba(38, 66, 42, 0.15) !important;
+    border-radius: 10px !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
+    padding: 10px 14px !important;
+    min-height: 42px;
+    margin-bottom: 5px;
+}
+
+/* Tombol menu aktif */
+section[data-testid="stSidebar"]
+div.stButton > button[data-testid="stBaseButton-primary"] {
+    background: var(--green) !important;
+    color: var(--white) !important;
+    border: 1px solid var(--green) !important;
+    font-weight: 700 !important;
+}
+
+/* Efek hover */
+section[data-testid="stSidebar"] div.stButton > button:hover {
+    background: rgba(38, 66, 42, 0.12) !important;
+    color: var(--green) !important;
+    border-color: var(--green) !important;
+}
+
+/* Hover tombol aktif */
+section[data-testid="stSidebar"]
+div.stButton > button[data-testid="stBaseButton-primary"]:hover {
+    background: #1d3521 !important;
+    color: var(--white) !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
 
 
 def algorithm_header(title, subtitle, formula):
@@ -377,9 +715,7 @@ def algorithm_header(title, subtitle, formula):
 def process_skeleton(title, input_label="Masukkan Teks", key_label="Kunci"):
     left, right = st.columns([1.05, 1.35], gap="large")
 
-    # ========================================================
     # KOLOM KIRI
-    # ========================================================
     with left:
 
         # ---------- INPUT ----------
@@ -407,7 +743,7 @@ def process_skeleton(title, input_label="Masukkan Teks", key_label="Kunci"):
             )
 
             st.button(
-                "🔒 Proses",
+                "Proses",
                 type="primary",
                 use_container_width=True,
                 key=f"{title}_button"
@@ -451,7 +787,7 @@ def process_skeleton(title, input_label="Masukkan Teks", key_label="Kunci"):
         # ---------- CATATAN ----------
         st.markdown(
             '<div class="note">'
-            '💡 Area ini disediakan untuk penjelasan proses, '
+            'Area ini disediakan untuk penjelasan proses, '
             'rumus, representasi karakter/biner, atau tahapan algoritma.'
             '</div>',
             unsafe_allow_html=True
@@ -459,6 +795,26 @@ def process_skeleton(title, input_label="Masukkan Teks", key_label="Kunci"):
 
     return mode, text, key
 
+def footer():
+    st.markdown("""
+    <div class="app-footer">
+        CryptoLab - Project Mata Kuliah Kriptografi
+    </div>
+    """, unsafe_allow_html=True)
+
+# ============================================================
+# FOOTER FUNCTION
+# ============================================================
+
+def footer():
+    st.markdown(
+        """
+        <div class="app-footer">
+            CryptoLab - Project Mata Kuliah Kriptografi
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 # ============================================================
 # PAGES
@@ -491,34 +847,71 @@ if menu == "Beranda":
         ("5", "Super Encryption", "Gabungan 4 Algoritma", "card-super"),
     ]
 
-    cols = st.columns(5)
+    # ========================================================
+    # KARTU ALGORITMA
+    # ========================================================
+
+    cards = [
+        ("1", "Caesar Cipher", "Klasik", "card-caesar"),
+        ("2", "Vigenère Cipher", "Klasik", "card-vigenere"),
+        ("3", "XOR Cipher", "Modern", "card-xor"),
+        ("4", "LFSR Stream Cipher", "Modern", "card-lfsr"),
+        ("5", "Super Encryption", "Gabungan 4 Algoritma", "card-super"),
+    ]
+
+    cols = st.columns(5, gap="medium")
+
     for col, (num, name, typ, cls) in zip(cols, cards):
         with col:
-            st.markdown(f"""
-            <div class="algo-card {cls}">
-                <div class="algo-number">{num}</div>
-                <div class="algo-name">{name}</div>
-                <div class="algo-type">{typ}</div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(
+                f"""
+                <div class="algo-card {cls}">
+                    <div class="algo-number">{num}</div>
+                    <div class="algo-name">{name}</div>
+                    <div class="algo-type">{typ}</div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    # Jarak antara kartu algoritma dan kartu informasi
+    st.markdown(
+        '<div class="home-section-spacer"></div>',
+        unsafe_allow_html=True
+    )
 
-    cols = st.columns(3)
+    # ========================================================
+    # KARTU INFORMASI
+    # ========================================================
+
     info = [
-        ("🖱️ Mudah Digunakan", "Antarmuka sederhana dan interaktif."),
-        ("⚙️ Proses Algoritma", "Menampilkan langkah-langkah enkripsi dan dekripsi."),
-        ("📖 Belajar Kriptografi", "Disiapkan untuk mendukung pembelajaran materi kuliah."),
+        (
+            "Mudah Digunakan",
+            "Antarmuka sederhana dan interaktif."
+        ),
+        (
+            "Proses Algoritma",
+            "Menampilkan langkah-langkah enkripsi dan dekripsi."
+        ),
+        (
+            "Belajar Kriptografi",
+            "Disiapkan untuk mendukung pembelajaran materi kuliah."
+        ),
     ]
+
+    cols = st.columns(3, gap="large")
 
     for col, (title, desc) in zip(cols, info):
         with col:
-            st.markdown(f"""
-            <div class="info-card">
-                <div class="info-title">{title}</div>
-                <div class="info-text">{desc}</div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(
+                f"""
+                <div class="info-card">
+                    <div class="info-title">{title}</div>
+                    <div class="info-text">{desc}</div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
 elif menu == "1. Caesar Cipher":
     algorithm_header(
@@ -559,57 +952,151 @@ elif menu == "5. Super Encryption":
         "Caesar → Vigenère → XOR → LFSR"
     )
 
-    st.markdown('<div class="panel">', unsafe_allow_html=True)
-    st.markdown('<div class="panel-title">Input & Parameter Kunci</div>',
-                unsafe_allow_html=True)
+    # ========================================================
+    # INPUT & PARAMETER
+    # ========================================================
 
-    left, right = st.columns([1.3, 1])
+    with st.container(border=True):
 
-    with left:
-        st.radio("Pilih Proses", ["Enkripsi", "Dekripsi"], horizontal=True)
-        st.text_input("Masukkan Teks", key="super_text")
-
-    with right:
-        st.text_input("Kunci Caesar (k)", key="super_caesar")
-        st.text_input("Kunci Vigenère", key="super_vigenere")
-        st.text_input("Kunci XOR", key="super_xor")
-        st.text_input("Seed LFSR (biner)", key="super_lfsr")
-
-    st.button("🔒 Proses Super Encryption", type="primary",
-              use_container_width=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    left, right = st.columns([1.25, 1])
-
-    with left:
-        st.markdown('<div class="panel">', unsafe_allow_html=True)
-        st.markdown('<div class="panel-title">Tahapan Proses</div>',
-                    unsafe_allow_html=True)
-        st.markdown("""
-        <div class="placeholder">
-            <b>1.</b> Caesar Cipher<br><br>
-            <b>2.</b> Vigenère Cipher<br><br>
-            <b>3.</b> XOR Cipher<br><br>
-            <b>4.</b> LFSR Stream Cipher
-        </div>
-        """, unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    with right:
-        st.markdown('<div class="panel">', unsafe_allow_html=True)
-        st.markdown('<div class="panel-title">Hasil Akhir</div>',
-                    unsafe_allow_html=True)
         st.markdown(
-            '<div class="placeholder">Hasil Super Encryption akan diisi Anggota 4.</div>',
+            '<div class="panel-title">Input & Parameter Kunci</div>',
             unsafe_allow_html=True
         )
-        st.markdown('</div>', unsafe_allow_html=True)
+
+        left, right = st.columns([1.3, 1], gap="large")
+
+        with left:
+
+            st.radio(
+                "Pilih Proses",
+                ["Enkripsi", "Dekripsi"],
+                horizontal=True,
+                key="super_mode"
+            )
+
+            st.text_input(
+                "Masukkan Teks",
+                key="super_text"
+            )
+
+        with right:
+
+            st.text_input(
+                "Kunci Caesar (k)",
+                key="super_caesar"
+            )
+
+            st.text_input(
+                "Kunci Vigenère",
+                key="super_vigenere"
+            )
+
+            st.text_input(
+                "Kunci XOR",
+                key="super_xor"
+            )
+
+            st.text_input(
+                "Seed LFSR (biner)",
+                key="super_lfsr"
+            )
+
+        st.button(
+            "Proses Super Encryption",
+            type="primary",
+            use_container_width=True,
+            key="super_button"
+        )
+
+
+    # ========================================================
+    # HASIL SUPER ENCRYPTION
+    # ========================================================
+
+    left, right = st.columns([1.25, 1], gap="large")
+
+
+    with left:
+
+        with st.container(border=True):
+
+            st.markdown(
+                '<div class="panel-title">Tahapan Proses</div>',
+                unsafe_allow_html=True
+            )
+
+            st.markdown("""
+            <div class="placeholder">
+
+                <b>1.</b> Caesar Cipher<br><br>
+                <b>2.</b> Vigenère Cipher<br><br>
+                <b>3.</b> XOR Cipher<br><br>
+                <b>4.</b> LFSR Stream Cipher
+
+            </div>
+            """, unsafe_allow_html=True)
+
+
+    with right:
+
+        with st.container(border=True):
+
+            st.markdown(
+                '<div class="panel-title">Hasil Akhir</div>',
+                unsafe_allow_html=True
+            )
+
+            st.markdown(
+                '<div class="placeholder">'
+                'Hasil Super Encryption akan diisi Anggota 4.'
+                '</div>',
+                unsafe_allow_html=True
+            )
 
 elif menu == "Tentang Aplikasi":
-    st.header("Tentang Aplikasi")
-    st.info("Halaman informasi aplikasi — dapat dikembangkan setelah struktur kelompok disepakati.")
+    st.markdown(
+        """
+        <div class="page-header">
+            <div class="page-title">Tentang Aplikasi</div>
+            <div class="page-subtitle">
+                Informasi mengenai aplikasi CryptoLab.
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-title">CryptoLab</div>
+            <div class="info-text">
+                CryptoLab merupakan aplikasi pembelajaran kriptografi
+                yang digunakan untuk memahami proses enkripsi dan
+                dekripsi melalui algoritma klasik, modern, dan
+                super encryption.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 elif menu == "Kelompok":
-    st.header("Kelompok")
-    st.info("Daftar anggota dan pembagian tugas akan ditambahkan bersama anggota kelompok.")
+    st.markdown(
+        """
+        <div class="page-header">
+            <div class="page-title">Kelompok</div>
+            <div class="page-subtitle">
+                Informasi anggota dan pembagian tugas proyek.
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-title">Anggota Kelompok</div>
+            <div class="info-text">
+                Daftar anggota dan pembagian tugas akan ditambahkan
+                bersama anggota kelompok.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+footer()
+
+    
