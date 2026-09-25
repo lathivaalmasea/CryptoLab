@@ -1,6 +1,6 @@
 import streamlit as st
 import os
-from algorithms import caesar
+from algorithms import caesar, vigenere
 
 ###. LOGO CRYPTOLAB
 def get_logo_path():
@@ -135,6 +135,43 @@ body,
     direction: ltr !important;
     font-feature-settings: "liga" !important;
     -webkit-font-feature-settings: "liga" !important;
+}
+
+/* =========================================================
+   FIX IKON PANAH st.expander (Bujursangkar Vigenère, dll)
+   Ikon panah di dalam expander memakai testid berbeda-beda
+   tergantung versi Streamlit, jadi ditarget lebih spesifik
+   supaya menang dari aturan font global di atas dan tidak
+   bertabrakan/tumpang tindih dengan label expander.
+   ========================================================= */
+
+div[data-testid="stExpander"] summary {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+div[data-testid="stExpander"] summary [data-testid="stIconMaterial"],
+div[data-testid="stExpander"] summary [data-testid="stExpanderToggleIcon"],
+div[data-testid="stExpander"] summary svg {
+    font-family: "Material Symbols Rounded" !important;
+    font-weight: 400 !important;
+    font-style: normal !important;
+    font-size: 20px !important;
+    line-height: 1 !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+    white-space: nowrap !important;
+    direction: ltr !important;
+    font-feature-settings: "liga" !important;
+    -webkit-font-feature-settings: "liga" !important;
+    flex-shrink: 0 !important;
+    width: auto !important;
+    position: static !important;
+}
+
+div[data-testid="stExpander"] summary [data-testid="stMarkdownContainer"] {
+    flex: 1 1 auto !important;
 }
 
 /* Background Utama */
@@ -1061,12 +1098,243 @@ elif menu == "1. Caesar Cipher":
     caesar_page()
 
 elif menu == "2. Vigenère Cipher":
+
     algorithm_header(
         "2. Vigenère Cipher (Klasik)",
-        "Kerangka modul Vigenère Cipher. Implementasi akan dikerjakan Anggota 2.",
-        "Enkripsi : Cᵢ = (Pᵢ + Kᵢ) mod 26<br>Dekripsi : Pᵢ = (Cᵢ - Kᵢ) mod 26"
+        "Algoritma kriptografi klasik menggunakan kunci berupa kata.",
+        "Enkripsi : Cᵢ = (Pᵢ + Kᵢ) mod 26<br>"
+        "Dekripsi : Pᵢ = (Cᵢ - Kᵢ) mod 26"
     )
-    process_skeleton("vigenere", key_label="Kunci")
+
+
+    left, right = st.columns(
+        [1.05, 1.35],
+        gap="large"
+    )
+
+
+    # ========================================================
+    # KOLOM KIRI : INPUT DAN HASIL
+    # ========================================================
+
+    with left:
+
+
+        # ================= INPUT =================
+
+        with st.container(border=True):
+
+            st.markdown(
+                '<div class="panel-title">Input</div>',
+                unsafe_allow_html=True
+            )
+
+
+            mode = st.radio(
+                "Pilih Proses",
+                [
+                    "Enkripsi",
+                    "Dekripsi"
+                ],
+                horizontal=True,
+                key="vigenere_mode"
+            )
+
+
+            text = st.text_input(
+                "Masukkan Teks",
+                key="vigenere_text"
+            )
+
+
+            key = st.text_input(
+                "Kunci",
+                key="vigenere_key"
+            )
+
+
+            proses = st.button(
+                "Proses",
+                type="primary",
+                use_container_width=True,
+                key="vigenere_button"
+            )
+
+
+
+        # ================= HASIL =================
+
+        with st.container(border=True):
+
+            st.markdown(
+                '<div class="panel-title">Hasil</div>',
+                unsafe_allow_html=True
+            )
+
+
+            if proses:
+
+
+                if text == "":
+
+                    st.warning(
+                        "Masukkan teks terlebih dahulu."
+                    )
+
+
+                elif key == "":
+
+                    st.warning(
+                        "Masukkan kunci terlebih dahulu."
+                    )
+
+
+                else:
+
+
+                    if mode == "Enkripsi":
+
+                        hasil = vigenere.encrypt(
+                            text,
+                            key
+                        )
+
+                    else:
+
+                        hasil = vigenere.decrypt(
+                            text,
+                            key
+                        )
+
+
+                    st.markdown(
+                        f"""
+                        <div class="result-box">
+
+                        <b>Hasil {mode}:</b><br>
+
+                        {hasil}
+
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+
+
+            else:
+
+                st.markdown(
+                    '<div class="placeholder">'
+                    'Hasil algoritma akan ditampilkan di sini.'
+                    '</div>',
+                    unsafe_allow_html=True
+                )
+
+
+
+    # ========================================================
+    # KOLOM KANAN : LANGKAH PROSES
+    # ========================================================
+
+    with right:
+
+
+        # ================= LANGKAH PROSES =================
+
+        with st.container(border=True):
+
+            st.markdown(
+                '<div class="panel-title">'
+                'Langkah-langkah Proses'
+                '</div>',
+                unsafe_allow_html=True
+            )
+
+
+            if proses and text and key:
+
+
+                langkah = vigenere.get_steps(
+                    text,
+                    key,
+                    mode
+                )
+
+
+                st.dataframe(
+                    langkah,
+                    use_container_width=True,
+                    hide_index=True
+                )
+
+
+            else:
+
+
+                st.markdown(
+                    '<div class="placeholder">'
+                    'Tabel perhitungan setiap karakter '
+                    'akan ditampilkan di sini.'
+                    '</div>',
+                    unsafe_allow_html=True
+                )
+
+
+
+        # =================================================
+        # BUJURSANGKAR VIGENERE
+        # DI LUAR CARD LANGKAH PROSES
+        # =================================================
+
+        with st.expander(
+            "Bujursangkar Vigenère"
+        ):
+
+
+            import pandas as pd
+
+
+            table = (
+                vigenere
+                .generate_vigenere_table()
+            )
+
+
+            alphabet = list(
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            )
+
+
+            df_vigenere = pd.DataFrame(
+                table,
+                index=alphabet,
+                columns=alphabet
+            )
+
+
+            st.dataframe(
+                df_vigenere,
+                use_container_width=True
+            )
+
+
+
+        # ================= CATATAN =================
+
+        st.markdown(
+            """
+            <div class="note">
+
+            <b>Catatan:</b>
+            Vigenère Cipher menggunakan kata kunci
+            yang diulang secara periodik.
+            Setiap karakter dienkripsi menggunakan
+            pergeseran Caesar berdasarkan karakter kunci.
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 elif menu == "3. XOR Cipher":
     algorithm_header(
@@ -1237,5 +1505,3 @@ elif menu == "Kelompok":
     )
 
 footer()
-
-    
