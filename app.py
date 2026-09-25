@@ -1,6 +1,6 @@
 import streamlit as st
 import os
-from algorithms import caesar, vigenere
+from algorithms import caesar, vigenere, aes_cipher
 
 ###. LOGO CRYPTOLAB
 def get_logo_path():
@@ -44,7 +44,7 @@ def sidebar():
             "Beranda",
             "1. Caesar Cipher",
             "2. Vigenère Cipher",
-            "3. XOR Cipher",
+            "3. AES Cipher",
             "4. LFSR Stream Cipher",
             "5. Super Encryption",
             "Tentang Aplikasi",
@@ -411,7 +411,7 @@ section[data-testid="stSidebar"] .stCaption {
 
 .card-caesar,
 .card-vigenere,
-.card-xor,
+.card-aes,
 .card-lfsr,
 .card-super {
     background: var(--white);
@@ -967,6 +967,111 @@ def caesar_page():
             unsafe_allow_html=True
         )
 
+def aes_page():
+    """Halaman AES-128 yang menggunakan fungsi dari algorithms/aes_cipher.py."""
+    left, right = st.columns([1.05, 1.35], gap="large")
+
+    with left:
+        with st.container(border=True):
+            st.markdown('<div class="panel-title">Input AES-128</div>', unsafe_allow_html=True)
+            mode = st.radio(
+                "Pilih Proses", ["Enkripsi", "Dekripsi"],
+                horizontal=True, key="aes_mode"
+            )
+            text_label = "Masukkan Plaintext" if mode == "Enkripsi" else "Masukkan Ciphertext (hex)"
+            text_value = st.text_area(text_label, key="aes_text", height=130)
+            key_value = st.text_input(
+                "Kunci AES-128 (tepat 16 byte UTF-8)",
+                key="aes_key",
+                help="Kunci AES-128 harus tepat 16 byte setelah dikodekan sebagai UTF-8."
+            )
+            proses = st.button(
+                "Proses AES", type="primary", use_container_width=True, key="aes_button"
+            )
+
+        with st.container(border=True):
+            st.markdown('<div class="panel-title">Hasil</div>', unsafe_allow_html=True)
+            if proses:
+                if not text_value.strip():
+                    st.warning("Masukkan teks terlebih dahulu.")
+                elif not key_value:
+                    st.warning("Masukkan kunci AES-128 terlebih dahulu.")
+                else:
+                    try:
+                        if mode == "Enkripsi":
+                            hasil = aes_cipher.encrypt(text_value, key_value)
+                            if not hasil:
+                                st.warning("Fungsi encrypt() pada modul AES belum diimplementasikan.")
+                            else:
+                                st.markdown(
+                                    '<div class="result-box"><b>Ciphertext (hex):</b><br>'
+                                    + str(hasil) + '</div>', unsafe_allow_html=True
+                                )
+                        else:
+                            hasil = aes_cipher.decrypt(text_value, key_value)
+                            if hasil is None:
+                                st.warning("Fungsi decrypt() pada modul AES belum diimplementasikan.")
+                            else:
+                                hasil_tampil = str(hasil).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\n", "<br>")
+                                st.markdown(
+                                    '<div class="result-box"><b>Plaintext:</b><br>'
+                                    + hasil_tampil + '</div>', unsafe_allow_html=True
+                                )
+                    except Exception as exc:
+                        st.error(str(exc))
+            else:
+                st.markdown(
+                    '<div class="placeholder">Hasil enkripsi atau dekripsi akan ditampilkan di sini.</div>',
+                    unsafe_allow_html=True
+                )
+
+            st.markdown(
+                '<div class="note"><b>Catatan:</b> AES-128 memakai kunci 16 byte. '
+                'Plaintext otomatis diberi padding PKCS#7 saat enkripsi. Ciphertext '
+                'ditampilkan dalam format heksadesimal.</div>',
+                unsafe_allow_html=True
+            )
+
+    with right:
+        with st.container(border=True):
+            st.markdown('<div class="panel-title">Langkah-langkah Proses AES</div>', unsafe_allow_html=True)
+            if proses and text_value.strip() and key_value:
+                try:
+                    steps = aes_cipher.get_steps(text_value, key_value, mode)
+                    if not steps:
+                        st.info("Rincian langkah belum tersedia. Pastikan get_steps() pada modul AES sudah diimplementasikan.")
+                    for idx, step in enumerate(steps or [], start=1):
+                        title = step.get("tahap", f"Tahap {idx}")
+                        round_no = step.get("putaran")
+                        label = f"Langkah {idx}: {title}"
+                        if round_no not in (None, "", "—"):
+                            label += f" · Putaran {round_no}"
+                        with st.expander(label, expanded=(idx == 1)):
+                            description = step.get("penjelasan", "")
+                            if description:
+                                st.caption(description)
+                            state = step.get("state")
+                            if state:
+                                import pandas as pd
+                                # State normal berbentuk matriks 4x4; tahap padding
+                                # dapat berisi satu baris byte untuk setiap blok.
+                                if isinstance(state, list) and state and isinstance(state[0], list):
+                                    if len(state) == 4 and all(isinstance(row, list) and len(row) == 4 for row in state):
+                                        df = pd.DataFrame(state, index=["Baris 0", "Baris 1", "Baris 2", "Baris 3"], columns=["Kolom 0", "Kolom 1", "Kolom 2", "Kolom 3"])
+                                    else:
+                                        df = pd.DataFrame(state)
+                                    st.dataframe(df, use_container_width=True)
+                                else:
+                                    st.code(str(state))
+                except Exception as exc:
+                    st.error(f"Langkah proses tidak dapat ditampilkan: {exc}")
+            else:
+                st.markdown(
+                    '<div class="placeholder">Langkah demi langkah AES akan muncul setelah tombol Proses AES ditekan.</div>',
+                    unsafe_allow_html=True
+                )
+
+
 def footer():
     st.markdown("""
     <div class="app-footer">
@@ -1014,7 +1119,7 @@ if menu == "Beranda":
     cards = [
         ("1", "Caesar Cipher", "Klasik", "card-caesar"),
         ("2", "Vigenère Cipher", "Klasik", "card-vigenere"),
-        ("3", "XOR Cipher", "Modern", "card-xor"),
+        ("3", "AES Cipher", "Modern", "card-aes"),
         ("4", "LFSR Stream Cipher", "Modern", "card-lfsr"),
         ("5", "Super Encryption", "Gabungan 4 Algoritma", "card-super"),
     ]
@@ -1026,7 +1131,7 @@ if menu == "Beranda":
     cards = [
         ("1", "Caesar Cipher", "Klasik", "card-caesar"),
         ("2", "Vigenère Cipher", "Klasik", "card-vigenere"),
-        ("3", "XOR Cipher", "Modern", "card-xor"),
+        ("3", "AES Cipher", "Modern", "card-aes"),
         ("4", "LFSR Stream Cipher", "Modern", "card-lfsr"),
         ("5", "Super Encryption", "Gabungan 4 Algoritma", "card-super"),
     ]
@@ -1336,13 +1441,14 @@ elif menu == "2. Vigenère Cipher":
             unsafe_allow_html=True
         )
 
-elif menu == "3. XOR Cipher":
+elif menu == "3. AES Cipher":
     algorithm_header(
-        "3. XOR Cipher (Modern)",
-        "Kerangka modul XOR Cipher. Implementasi akan dikerjakan Anggota 3.",
-        "Enkripsi : C = P ⊕ K<br>Dekripsi : P = C ⊕ K"
+        "3. AES Cipher (Modern)",
+        "Advanced Encryption Standard (AES-128) untuk proses enkripsi dan dekripsi teks.",
+        "AES-128: ukuran blok 128 bit (16 byte), kunci 128 bit (16 byte), "
+        "dan 10 putaran. Enkripsi: AddRoundKey → 9 putaran utama → Final Round."
     )
-    process_skeleton("xor", key_label="Kunci XOR")
+    aes_page()
 
 elif menu == "4. LFSR Stream Cipher":
     algorithm_header(
@@ -1356,7 +1462,7 @@ elif menu == "5. Super Encryption":
     algorithm_header(
         "5. Super Encryption (Gabungan 4 Algoritma)",
         "Kerangka integrasi empat algoritma. Implementasi akan dikerjakan Anggota 4.",
-        "Caesar → Vigenère → XOR → LFSR"
+        "Caesar → Vigenère → AES → LFSR"
     )
 
     # ========================================================
@@ -1399,8 +1505,8 @@ elif menu == "5. Super Encryption":
             )
 
             st.text_input(
-                "Kunci XOR",
-                key="super_xor"
+                "Kunci AES",
+                key="super_aes"
             )
 
             st.text_input(
@@ -1437,7 +1543,7 @@ elif menu == "5. Super Encryption":
 
                 <b>1.</b> Caesar Cipher<br><br>
                 <b>2.</b> Vigenère Cipher<br><br>
-                <b>3.</b> XOR Cipher<br><br>
+                <b>3.</b> AES Cipher<br><br>
                 <b>4.</b> LFSR Stream Cipher
 
             </div>
