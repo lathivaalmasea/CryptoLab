@@ -26,7 +26,6 @@ RCON = [
     0x20, 0x40, 0x80, 0x1B, 0x36
 ]
 
-
 # ============================================================
 # OPERASI DASAR GF(2^8) DAN PEMBENTUKAN S-BOX
 # ============================================================
@@ -74,7 +73,7 @@ def _make_sboxes():
     Membentuk S-Box dan Inverse S-Box AES.
 
     S-Box dibentuk dari invers perkalian GF(2^8), kemudian
-    diterapkan transformasi affine sesuai standar AES.
+    diterapkan transformasi affine sesuai dengan standar AES.
     """
     sbox = []
     inverse_sbox = [0] * 256
