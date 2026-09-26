@@ -3,10 +3,12 @@
 # Penanggung jawab: Anggota 2
 # ============================================================
 # Fungsi:
-# - generate_vigenere_table(): Membuat Bujursangkar Vigenère
-# - encrypt()              : Enkripsi Vigenère Cipher
-# - decrypt()              : Dekripsi Vigenère Cipher
-# - get_steps()            : Menampilkan langkah perhitungan algoritma
+# - generate_vigenere_table()     : Membuat Bujursangkar Vigenère
+# - generate_vigenere_dataframe() : Bujursangkar Vigenère dalam bentuk
+#                                    pandas DataFrame (siap ditampilkan di UI)
+# - encrypt()                     : Enkripsi Vigenère Cipher
+# - decrypt()                     : Dekripsi Vigenère Cipher
+# - get_steps()                   : Menampilkan langkah perhitungan algoritma
 # ============================================================
 
 
@@ -48,6 +50,29 @@ def generate_vigenere_table():
 
 
     return table
+
+
+
+def generate_vigenere_dataframe():
+    """
+    Mengembalikan Bujursangkar Vigenère dalam bentuk pandas
+    DataFrame, dengan baris dan kolom diberi label A-Z, agar
+    siap langsung ditampilkan lewat st.dataframe() di app.py.
+    """
+
+    import pandas as pd
+
+    alphabet = list(
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    )
+
+    table = generate_vigenere_table()
+
+    return pd.DataFrame(
+        table,
+        index=alphabet,
+        columns=alphabet
+    )
 
 
 
@@ -463,3 +488,4 @@ if __name__ == "__main__":
     ):
 
         print(step)
+        
